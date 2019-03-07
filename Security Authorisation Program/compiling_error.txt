@@ -1,0 +1,4 @@
+D:\Personal\1stYearProgramming\Security Authorisation Program\assignment2.c: In function 'inputCode':
+D:\Personal\1stYearProgramming\Security Authorisation Program\assignment2.c:62:1: error: parameter name omitted
+ void inputCode(int[]) {
+ ^~~~
