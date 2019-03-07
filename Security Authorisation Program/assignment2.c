@@ -61,4 +61,5 @@ int main () {
 
 void inputCode(int[]) {
 	return;
+	
 }
