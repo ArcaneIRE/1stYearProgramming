@@ -1,4 +1,20 @@
-D:\Personal\1stYearProgramming\Security Authorisation Program\assignment2.c: In function 'inputCode':
-D:\Personal\1stYearProgramming\Security Authorisation Program\assignment2.c:62:1: error: parameter name omitted
- void inputCode(int[]) {
- ^~~~
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c: In function 'main':
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c:53:15: warning: passing argument 1 of 'inputCode' makes integer from pointer without a cast [-Wint-conversion]
+     inputCode(&userCode);
+               ^
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c:26:6: note: expected 'int' but argument is of type 'int (*)[4]'
+ void inputCode(int userCode);
+      ^~~~~~~~~
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c:63:15: warning: passing argument 1 of 'inputCode' makes integer from pointer without a cast [-Wint-conversion]
+     inputCode(userCode);
+               ^~~~~~~~
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c:26:6: note: expected 'int' but argument is of type 'int *'
+ void inputCode(int userCode);
+      ^~~~~~~~~
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c: At top level:
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c:79:6: error: conflicting types for 'inputCode'
+ void inputCode(int *userCode) {
+      ^~~~~~~~~
+D:\TUD\1st Year\Programming\Github\1stYearProgramming\Security Authorisation Program\assignment2.c:26:6: note: previous declaration of 'inputCode' was here
+ void inputCode(int userCode);
+      ^~~~~~~~~

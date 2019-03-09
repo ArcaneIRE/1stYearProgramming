@@ -23,10 +23,10 @@ Version: N/A
 
 #define CODE_SIZE 4
 
-void inputCode(int[]);
-void encryptCode(int[]);
-void verifyCode(int[]);
-void decryptCode(int[]);
+void inputCode(int userCode[]);
+void encryptCode(int userCode[]);
+int verifyCode(int userCode[]);
+void decryptCode(int userCode[]);
 void displayVerificationTotals();
 
 int main () {
@@ -34,11 +34,11 @@ int main () {
 	int userCode[CODE_SIZE] = {}; //Stores the user's entered code.
 	char menuChoice = '0'; //0 represents no choice.
 
-	printf("//// Security Authorisation Program \\\\\\\\\n");
+	printf("//// Security Authorisation Program \\\\\\\\");
 
 	do {
 		//Menu Section
-		printf(	"### MENU ###\n\n"
+		printf(	"\n### MENU ###\n\n"
 					"1. Enter a code.\n"
 					"2. Encrypt and attempt to verify your code.\n"
 					"3. Decrypt your code.\n"
@@ -49,17 +49,67 @@ int main () {
 		fflush(stdin); //Clears newline from input buffer
 
 		switch (menuChoice) {
-			case '1':
+			case '1': //Enter a code
 				inputCode(userCode);
+				break;
+			case '2': //Encrypt and attempt verification
+				encryptCode(userCode);
+				verifyCode(userCode);
+				break;
+			case '3': //Decrypt code
+				decryptCode(userCode);
+				break;
+			case '4': //View No. of tries
+				inputCode(userCode);
+				break;
+			default:
 				break;
 		}
 
 	} while (menuChoice != '5');
 
+	printf("Program wil now Exit");
+
 	return 0;
 }
 
-void inputCode(int[]) {
+/* Input Code
+Takes the inputted numbers and places them into a string.
+*/
+void inputCode(int userCode[]) {
+	printf(	"\nPlease enter a 4 digit passcode followed by an enter.\n"
+				"Only numbers 0-9 are accepted.\n");
+	scanf("%s", &userCode);
+	fflush(stdin); //Clears newline from input buffer
+
 	return;
-	
 }
+
+/* Encrypt Code
+Swaps the 1st and 3rd numbers. Swaps the 2nd and 4th numbers.
+Adds 1 to every number. Numbers are treated as Mod 10(0-9).
+*/
+void encryptCode(int userCode[]){
+	int temp;
+	int i;
+	for (i = 0; i < CODE_SIZE; i++) {
+		printf("%d", userCode[i]);
+	}
+	temp = userCode[1];
+	userCode[1] = userCode[3];
+	userCode[3] = userCode[1];
+
+	temp = userCode[2];
+	userCode[2] = userCode[4];
+	userCode[4] = userCode[2];
+
+	for (i = 0; i < CODE_SIZE; i++) {
+		userCode[i] = (userCode[i] + 1) % 10;
+	}
+
+	for (i = 0; i < CODE_SIZE; i++) {
+		printf("%d", userCode[i]);
+	}
+}
+int verifyCode(int userCode[]){}
+void decryptCode(int userCode[]){}
