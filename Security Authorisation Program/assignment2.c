@@ -28,9 +28,9 @@ Version: N/A
 
 void inputCode(int userCode[]);
 void encryptCode(int userCode[]);
-int verifyCode(int accessCode[], int userCode[]);
+void verifyCode(int accessCode[], int userCode[], int *successfulAttemptsPointer, int *failedAttemptsPointer);
 void decryptCode(int userCode[]);
-void displayVerificationTotals(int *successfulAttempts, int *failedAttempts);
+void displayVerificationTotals(int *successfulAttemptsPointer, int *failedAttemptsPointer);
 
 int main () {
 	int accessCode[CODE_SIZE] = {4, 5, 2, 3}; //The initial code
@@ -67,11 +67,7 @@ int main () {
 				if ( *codeStatePointer == 'u') {
 					encryptCode(userCode);
 					*codeStatePointer = 'e'; //Code is marked as encrypted.
-					if (verifyCode(accessCode, userCode) == 1) {
-						successfulAttempts++;
-					} else {
-						failedAttempts++;
-					} //End inner if else
+					verifyCode(accessCode, userCode, successfulAttemptsPointer, failedAttemptsPointer);
 				} else {
 					printf("\nCancelled. You must have an unencrypted code entered to do this.");
 				} //End outer if else
@@ -87,19 +83,18 @@ int main () {
 			case '4': //View No. of tries
 				displayVerificationTotals(successfulAttemptsPointer, failedAttemptsPointer);
 				break;
+			case '5':
+				printf("\nProgram wil now Exit.\n");
+				break;
 
 			default:
-				if (menuChoice != '5') {
-					printf(	"\nPlease only enter single digits between 1-5 (inclusive) "
-								"and try again.");
-				} //End if
+				printf(	"\nPlease only enter single digits between 1-5 (inclusive) "
+							"and try again.");
 
 				break;
 		} //End Switch
 
 	} while (menuChoice != '5'); //End do while
-
-	printf("\nProgram wil now Exit.\n");
 
 	return 0;
 } //End main
@@ -180,7 +175,7 @@ void encryptCode(int userCode[]){
 Compares user's encrypted code against the access code one digit at a time.
 Returns succcess or fail.
 */
-int verifyCode(int accessCode[], int userCode[]){
+void verifyCode(int accessCode[], int userCode[], int *successfulAttemptsPointer, int *failedAttemptsPointer){
 	int i; //iterator
 	char verified = 'y'; // y = verified, n = not verified.
 
@@ -189,13 +184,15 @@ int verifyCode(int accessCode[], int userCode[]){
 			verified = 'n'; //Only changes if a pair does not match.
 			printf("\n\nVerification failed. Your code does not match the access code.");
 
-			return -1;
+			*failedAttemptsPointer = *failedAttemptsPointer + 1;
+			return;
 		} //End if
 	} //End for
 
 	printf("\n\nVerification successful. Your code matches the access code.");
+	*successfulAttemptsPointer = *successfulAttemptsPointer + 1;
 
-	return 1;
+	return;
 } //End verifyCode
 
 /* Decrypt Code
