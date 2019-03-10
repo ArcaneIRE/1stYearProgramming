@@ -4,28 +4,31 @@ This is an encryption and decryption based program. It displays a menu to the
 user, which they can choose an option from that lets them do one of 5 things;
 
 	1. Enter a code.
-	2. Encrypt this code and verify if it matches the authorised access code.
+	2. Encrypts their code and verifies if it matches the authorised access code.
 	3. Decrypt the code.
 	4. Display the number of times the code has been entered successfully,
 	and incorrectly.
 	5. Exit the program.
 
 Each menu option is implemented in it's own function. All parameters are
-passed by reference. All writing involving arrays uses pointer notation(Arr+2)
-and not subscript notation (Arr[2]).
+passed by reference.
 
 Author: David Corcoran
 Date Last Modified: 09/03/2019
+Compiler: GCC
 Version: N/A
 */
 
 #include <stdio.h>
 
 #define CODE_SIZE 4
+#define MIN_VALUE 0
+#define MAX_VALUE 9
+#define ENCRYPTION_INCREASE 1
 
 void inputCode(int userCode[]);
 void encryptCode(int userCode[]);
-int verifyCode(int userCode[]);
+void verifyCode(int userCode[]);
 void decryptCode(int userCode[]);
 void displayVerificationTotals();
 
@@ -33,12 +36,13 @@ int main () {
 	int accessCode[CODE_SIZE] = {4, 5, 2, 3}; //The initial code
 	int userCode[CODE_SIZE] = {}; //Stores the user's entered code.
 	char menuChoice = '0'; //0 represents no choice.
+	char codeState = 'n'; //n = New, u = Unenencrypted, e = Encrypted.
+	char *codeStatePointer = &codeState;
 
 	printf("//// Security Authorisation Program \\\\\\\\");
-
 	do {
 		//Menu Section
-		printf(	"\n### MENU ###\n\n"
+		printf(	"\n\n### MENU ###\n\n"
 					"1. Enter a code.\n"
 					"2. Encrypt and attempt to verify your code.\n"
 					"3. Decrypt your code.\n"
@@ -51,65 +55,144 @@ int main () {
 		switch (menuChoice) {
 			case '1': //Enter a code
 				inputCode(userCode);
+				*codeStatePointer = 'u';//Code is marked as inputted, but unencrypted.
 				break;
 			case '2': //Encrypt and attempt verification
-				encryptCode(userCode);
-				verifyCode(userCode);
+				if ( *codeStatePointer == 'u') {
+					encryptCode(userCode);
+					*codeStatePointer = 'e';//Code is marked as encrypted.
+					verifyCode(userCode);
+				} else {
+					printf("\nFailed. You must have an unencrypted code entered to do this.");
+				}
 				break;
 			case '3': //Decrypt code
-				decryptCode(userCode);
+				if ( *codeStatePointer == 'e') {
+					decryptCode(userCode);
+					*codeStatePointer = 'u'; //Code is marked as unencrypted.
+				} else {
+					printf("\nFailed. You must have an encrypted code to do this.");
+				}
 				break;
 			case '4': //View No. of tries
 				inputCode(userCode);
 				break;
+
 			default:
+				printf(	"\nPlease only enter single digits between 1-5 (inclusive) "
+							"and try again.");
 				break;
-		}
+		}//End Switch
 
-	} while (menuChoice != '5');
-
+	} while (menuChoice != '5'); //End do while
 	printf("Program wil now Exit");
 
 	return 0;
-}
+}//End main
 
 /* Input Code
-Takes the inputted numbers and places them into a string.
+Inputs 4 integers into an array, validates them, displays the array to
+the user then returns to main.
 */
 void inputCode(int userCode[]) {
-	printf(	"\nPlease enter a 4 digit passcode followed by an enter.\n"
-				"Only numbers 0-9 are accepted.\n");
-	scanf("%s", &userCode);
-	fflush(stdin); //Clears newline from input buffer
+	int i; //iterator
+	char validated = 'n'; //n for no, y for yes.
+
+	while (validated != 'y') {
+		//Input
+		printf(	"\nPlease enter a 4 digit passcode with each digit followed by enter.\n"
+					"Only numbers %d-%d are accepted. Letters are treated as 0.\n", MIN_VALUE, MAX_VALUE);
+		for (i=0; i < CODE_SIZE; i++) {
+			scanf("%d", &userCode[i]);
+			fflush(stdin); //Clears newline from input buffer
+		}//End for
+
+		/*Validation
+		Checks if anything entered is a*/
+		validated = 'y'; //Changes to 'n' if an error is found.
+		for (i=0; i < CODE_SIZE; i++) {
+			if ( (userCode[i] > MAX_VALUE) || (userCode[i] < MIN_VALUE) ) {
+				printf("\nFailed. Please only enter single digits between %d-%d (inclusive).\n", MIN_VALUE, MAX_VALUE);
+				validated = 'n';
+				break;
+			}//End if
+		}//End for
+	}//end while
+
+	//Displays new code
+	printf("\nSuccess. Your new code is ");
+	for (i=0; i < CODE_SIZE; i++) {
+		printf("%d", userCode[i]);
+	}//End for
 
 	return;
-}
+}//End inputCode
 
 /* Encrypt Code
 Swaps the 1st and 3rd numbers. Swaps the 2nd and 4th numbers.
 Adds 1 to every number. Numbers are treated as Mod 10(0-9).
 */
 void encryptCode(int userCode[]){
-	int temp;
+	int temp; //Used as holder variable for swaps.
 	int i;
-	for (i = 0; i < CODE_SIZE; i++) {
-		printf("%d", userCode[i]);
-	}
+
+	//Swaps first and third digits.
+	temp = userCode[0];
+	userCode[0] = userCode[2];
+	userCode[2] = temp;
+
+	//Swaps second and fourth digits.
 	temp = userCode[1];
 	userCode[1] = userCode[3];
-	userCode[3] = userCode[1];
+	userCode[3] = temp;
 
-	temp = userCode[2];
-	userCode[2] = userCode[4];
-	userCode[4] = userCode[2];
-
-	for (i = 0; i < CODE_SIZE; i++) {
-		userCode[i] = (userCode[i] + 1) % 10;
+	//Adds 1 to each digit and changes any values of 10 to 0.
+	for (i=0; i < CODE_SIZE; i++) {
+		userCode[i] = (userCode[i] + ENCRYPTION_INCREASE) % 10;
 	}
 
-	for (i = 0; i < CODE_SIZE; i++) {
+	//Displays encrypted code.
+	printf("\nSuccess. Your encrypted code is ");
+	for (i=0; i < CODE_SIZE; i++) {
 		printf("%d", userCode[i]);
+	}//End for
+
+	return;
+}//End encryptCode
+
+void verifyCode(int userCode[]){}
+
+/* Decrypt Code
+Runs the encryption algorithm in reverse.
+Subracts 1 from each digit, amking
+*/
+void decryptCode(int userCode[]){
+	int temp;
+	int i;
+
+	//Subtract 1 from every number.
+	for (i=0; i < CODE_SIZE; i++) {
+		userCode[i] = (userCode[i] - ENCRYPTION_INCREASE);
+		if (userCode[i] == -1){
+			userCode[i] = 9;
+		}
 	}
+
+	//Swaps the second and fourth digits back.
+	temp = userCode[1];
+	userCode[1] = userCode[3];
+	userCode[3] = temp;
+
+	//Swaps first and third digits back.
+	temp = userCode[0];
+	userCode[0] = userCode[2];
+	userCode[2] = temp;
+
+	//Displays unencrypted code.
+	printf("\nSuccess. Your unencrypted code is ");
+	for (i=0; i < CODE_SIZE; i++) {
+		printf("%d", userCode[i]);
+	}//End for
+
+	return;
 }
-int verifyCode(int userCode[]){}
-void decryptCode(int userCode[]){}
